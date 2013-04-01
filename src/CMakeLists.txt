@@ -35,14 +35,15 @@ find_library(POCO_XML PocoXML)
 find_library(POCO_UTIL PocoUtil)
 
 #add_definitions(-std=c99)
-add_executable(xplwemonat main.cpp WeMoDevice.cpp)
+#add_executable(xplwemonat main.cpp WeMoDevice.cpp)
+add_executable(xplwemonat main.cpp)
 
 #our XPL library
-target_link_libraries (xplwemonat xplsdk)
+# target_link_libraries (xplwemonat xplsdk)
 
-target_link_libraries (xplwemonat ${CMAKE_THREAD_LIBS_INIT})
+# target_link_libraries (xplwemonat ${CMAKE_THREAD_LIBS_INIT})
 #we use POCO for just about everything.
-target_link_libraries(xplwemonat ${POCO_FOUNDATION} ${POCO_NET} ${POCO_XML} ${POCO_UTIL})
+# target_link_libraries(xplwemonat ${POCO_FOUNDATION} ${POCO_NET} ${POCO_XML} ${POCO_UTIL})
 
 INSTALL(TARGETS xplwemonat
   RUNTIME DESTINATION bin
