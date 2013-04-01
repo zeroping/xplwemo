@@ -46,7 +46,7 @@ void setup_singnal_handler()
 int main ( int argc,const char * argv[] )
 {
 
-
+    cout<<"test\n";
     AutoPtr<ConsoleChannel> pCons ( new ConsoleChannel );
     AutoPtr<PatternFormatter> pPF ( new PatternFormatter );
     pPF->setProperty ( "pattern", "%H:%M:%S %s %I %p: %t" );

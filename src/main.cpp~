@@ -61,9 +61,9 @@ int main ( int argc,const char * argv[] )
 
     openlog ( "xplwemonat", LOG_PID, LOG_DAEMON );
 
-    WeMoDevice dev;
-    
-    dev.start();
+//     WeMoDevice dev;
+//     
+//     dev.start();
     poco_information ( rootlogger, "Main thread created" );
 
     setup_singnal_handler();
@@ -72,6 +72,7 @@ int main ( int argc,const char * argv[] )
     {
 
         Thread::sleep ( 1000 );
+        poco_information ( rootlogger, "test" );
 
     }
 
