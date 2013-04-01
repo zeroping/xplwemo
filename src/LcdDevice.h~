@@ -1,0 +1,41 @@
+// xPL Linux Hal Server basic types
+
+#ifndef LCDDEVICE_H
+#define LCDDEVICE_H
+
+#include <string>
+#include <vector>
+
+#include "Poco/SharedPtr.h"
+#include "xplUDP.h"
+#include "xplComms.h"
+#include "xplDevice.h"
+#include "Poco/Logger.h"
+#include "Poco/NumberFormatter.h"
+
+using namespace Poco;
+using namespace xpl;
+using namespace std;
+
+class LcdDevice
+{
+public:
+    
+    LcdDevice();
+    ~LcdDevice();
+
+    void start();
+    void HandleDeviceMessages ( MessageRxNotification* );
+    
+    static Path getConfigFileLocation();
+    void setMonitor ( bool arg1 );
+private:
+    Logger& hallog;
+
+    //xplDevice* pDevice;
+    SharedPtr<xplDevice> pDevice;
+    
+};
+
+
+#endif // XPLHal_H
