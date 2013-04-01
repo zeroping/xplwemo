@@ -44,7 +44,11 @@ target_link_libraries (xplwemonat ${CMAKE_THREAD_LIBS_INIT})
 #we use POCO for just about everything.
 target_link_libraries(xplwemonat ${POCO_FOUNDATION} ${POCO_NET} ${POCO_XML} ${POCO_UTIL})
 
-
+INSTALL(TARGETS xplwemonat
+  RUNTIME DESTINATION bin
+  LIBRARY DESTINATION lib
+  ARCHIVE DESTINATION lib
+)
 
 # add a target to generate API documentation with Doxygen
 # find_package(Doxygen)
