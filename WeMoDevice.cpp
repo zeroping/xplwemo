@@ -1,4 +1,4 @@
-#include "SensLogger.h"
+#include "WeMoDevice.h"
 
 
 #include <vector>
@@ -27,66 +27,78 @@ using Poco::Net::IPAddress;
 using Poco::Process;
 ;
 
-SensLogger::SensLogger() :
-    hallog ( Logger::get ( "xpllcdpower" ) )
+WeMoDevice::WeMoDevice() :
+    hallog ( Logger::get ( "xplwemonat" ) ),
+    relayPin ("13")
 {
 
 }
 
-void SensLogger::start()
+void WeMoDevice::start()
 {
 
-    //xplUDP::instance()->rxNotificationCenter.addObserver ( Observer<SensLogger, MessageRxNotification> ( *this,&SensLogger::HandleAllMessages ) );
+    //start by claiming our GPIO
+    relayPin.export_gpio();
+    relayPin.setdir_gpio("out");
+    
+    //xplUDP::instance()->rxNotificationCenter.addObserver ( Observer<WeMoDevice, MessageRxNotification> ( *this,&WeMoDevice::HandleAllMessages ) );
     //just create it
     xplUDP::instance();
     
     poco_debug ( hallog, "xplUDP created" );
-    pDevice.assign ( new xplDevice ( "smgpoe", "lcdpower", "1.0", true, true, xplUDP::instance() ) );
+    pDevice.assign ( new xplDevice ( "smgpoe", "wemonat", "1.0", true, true, xplUDP::instance() ) );
     if ( NULL == pDevice )
     {
         poco_error ( hallog, "no device" );
         return;
     }
 
-    pDevice->rxNotificationCenter.addObserver ( Observer<SensLogger, MessageRxNotification> ( *this,&SensLogger::HandleDeviceMessages ) );
+    pDevice->rxNotificationCenter.addObserver ( Observer<WeMoDevice, MessageRxNotification> ( *this,&WeMoDevice::HandleDeviceMessages ) );
 
     pDevice->Init();
+    
+    
 
 
 }
 
-SensLogger::~SensLogger()
+WeMoDevice::~WeMoDevice()
 {
     poco_debug ( hallog, "destroying xplHal" );
+    relayPin.setdir_gpio("in");
+    relayPin.unexport_gpio();
 
 }
 
-void SensLogger::setMonitor(bool enabled){
+void WeMoDevice::setRelay(bool enabled){
     if (enabled) {
-        poco_debug ( hallog, "monitor on" );
-        std::vector<std::string> args;
-        args.push_back("dpms");
-        args.push_back("force");
-        args.push_back("on");
-        Process::launch("/usr/bin/xset", args);
+        poco_debug ( hallog, "realy on" );
+//         std::vector<std::string> args;
+//         args.push_back("dpms");
+//         args.push_back("force");
+//         args.push_back("on");
+//         Process::launch("/usr/bin/xset", args);
+        relayPin.setval_gpio("1");
+        
     } else {
-        poco_debug ( hallog, "monitor off" );
-        std::vector<std::string> args;
-        args.push_back("dpms");
-        args.push_back("force");
-        args.push_back("off");
-        Process::launch("/usr/bin/xset", args);
+        poco_debug ( hallog, "relay off" );
+//         std::vector<std::string> args;
+//         args.push_back("dpms");
+//         args.push_back("force");
+//         args.push_back("off");
+//         Process::launch("/usr/bin/xset", args);
+        relayPin.setval_gpio("0");
     }
 }
 
 //messages that are local to us
-void SensLogger::HandleDeviceMessages ( MessageRxNotification* mNot )
+void WeMoDevice::HandleDeviceMessages ( MessageRxNotification* mNot )
 {
     poco_debug ( hallog, "got directed message: " + mNot->message->GetSchemaClass() + " " + mNot->message->GetSchemaType() );
 
     if ( (icompare(mNot->message->GetSchemaClass(), "Control")==0) && ( icompare(mNot->message->GetSchemaType(), "Basic")==0))  {
         const xplMsgItem* dev = mNot->message->GetMsgItem("device");
-        if (dev != NULL && icompare(dev->GetValue(),"monitor")==0 ) {
+        if (dev != NULL && icompare(dev->GetValue(),"relay")==0 ) {
             const xplMsgItem* dtype = mNot->message->GetMsgItem("type");
             if (dtype != NULL && icompare(dtype->GetValue(),"output")==0 ) {
                 const xplMsgItem* current = mNot->message->GetMsgItem("current");
@@ -94,10 +106,10 @@ void SensLogger::HandleDeviceMessages ( MessageRxNotification* mNot )
                     if ( (icompare(current->GetValue(),"enable")==0) 
                         || (icompare(current->GetValue(),"high")==0)) {
                     
-                        setMonitor(true);
+                        setRelay(true);
                     } else  if ( (icompare(current->GetValue(),"disable")==0) 
                         || (icompare(current->GetValue(),"low")==0)) {
-                        setMonitor(false); 
+                        setRelay(false); 
                     }
                 }
             } 
@@ -107,7 +119,7 @@ void SensLogger::HandleDeviceMessages ( MessageRxNotification* mNot )
     mNot->release();
 }
 
-Path SensLogger::getConfigFileLocation()
+Path WeMoDevice::getConfigFileLocation()
 {
     Poco::Path p ( Poco::Path::home() );
     p.pushDirectory ( ".xPL" );

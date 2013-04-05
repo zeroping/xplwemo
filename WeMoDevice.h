@@ -6,6 +6,8 @@
 #include <string>
 #include <vector>
 
+#include "GPIOPin.h"
+
 #include "Poco/SharedPtr.h"
 #include "xplUDP.h"
 #include "xplComms.h"
@@ -34,6 +36,7 @@ private:
 
     //xplDevice* pDevice;
     SharedPtr<xplDevice> pDevice;
+    GPIOPin relayPin;
     
 };
 

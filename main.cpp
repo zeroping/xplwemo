@@ -24,7 +24,7 @@ using namespace Poco;
 
 
 bool running = true;
-/*
+
 void shutdown_handler ( int s )
 {
     Logger& rootlogger = Logger::root();
@@ -41,40 +41,40 @@ void setup_singnal_handler()
     sigIntHandler.sa_flags = 0;
 
     sigaction ( SIGINT, &sigIntHandler, NULL );
-}*/
+}
 
 int main ( int argc,const char * argv[] )
 {
 
-    cout<<"test\n";
-//     AutoPtr<ConsoleChannel> pCons ( new ConsoleChannel );
-//     AutoPtr<PatternFormatter> pPF ( new PatternFormatter );
-//     pPF->setProperty ( "pattern", "%H:%M:%S %s %I %p: %t" );
-//     AutoPtr<FormattingChannel> pFC ( new FormattingChannel ( pPF, pCons ) );
-//     Logger& rootlogger = Logger::root();
-//     //Logger::root().setChannel(pFC);
-//     rootlogger.setChannel ( pFC );
-//     rootlogger.setLevel ( "debug" );
-// 
-//     poco_warning ( rootlogger, "starting logger" );
-//     poco_information ( rootlogger, "Starting up");
-// 
-//     openlog ( "xplwemonat", LOG_PID, LOG_DAEMON );
-// 
-// //     WeMoDevice dev;
-// //     
-// //     dev.start();
-//     poco_information ( rootlogger, "Main thread created" );
-// 
-//     setup_singnal_handler();
-//     
-//     while ( running )
-//     {
-// 
-//         Thread::sleep ( 1000 );
+//     cout<<"test\n";
+    AutoPtr<ConsoleChannel> pCons ( new ConsoleChannel );
+    AutoPtr<PatternFormatter> pPF ( new PatternFormatter );
+    pPF->setProperty ( "pattern", "%H:%M:%S %s %I %p: %t" );
+    AutoPtr<FormattingChannel> pFC ( new FormattingChannel ( pPF, pCons ) );
+    Logger& rootlogger = Logger::root();
+    Logger::root().setChannel(pFC);
+    rootlogger.setChannel ( pFC );
+    rootlogger.setLevel ( "debug" );
+
+    poco_warning ( rootlogger, "starting logger" );
+    poco_information ( rootlogger, "Starting up");
+    poco_warning ( rootlogger, "starting logger" );
+    openlog ( "xplwemonat", LOG_PID, LOG_DAEMON );
+
+    WeMoDevice dev;
+    
+    dev.start();
+    poco_information ( rootlogger, "Main thread created" );
+
+    setup_singnal_handler();
+    
+    while ( running )
+    {
+
+        Thread::sleep ( 1000 );
 //         poco_information ( rootlogger, "test" );
-// 
-//     }
+
+    }
 
     return 0;
     // exit(0);
