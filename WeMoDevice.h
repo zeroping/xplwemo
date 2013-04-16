@@ -15,10 +15,13 @@
 #include "Poco/Logger.h"
 #include "Poco/NumberFormatter.h"
 
+#include "Poco/Util/PropertyFileConfiguration.h"
+
 using namespace Poco;
 using namespace xpl;
 using namespace std;
-
+using Poco::AutoPtr;
+using Poco::Util::PropertyFileConfiguration;
 class WeMoDevice
 {
 public:
@@ -30,15 +33,24 @@ public:
     void HandleDeviceMessages ( MessageRxNotification* );
     
     static Path getConfigFileLocation();
-    void setRelay ( bool enabled );
+    void setRelay ( const bool enabled );
+    void inputLoop();
+    void buttonPress ( const string buttonName, const bool pressed );
+    void setLED ( const bool on );
 private:
     Logger& hallog;
 
     //xplDevice* pDevice;
     SharedPtr<xplDevice> pDevice;
     GPIOPin relayPin;
+    static const string configFilePath;
+    int gpiopinnum;
+    void loadConfiguration();
+    AutoPtr<PropertyFileConfiguration> pConf;
     
-};
+};  
+
+
 
 
 #endif // XPLHal_H

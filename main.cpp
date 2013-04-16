@@ -11,6 +11,7 @@
 #include <iostream>
 #include <fstream>
 #include "WeMoDevice.h"
+#include "GPIOInput.h"
 
 #include "Poco/Logger.h"
 #include "Poco/ConsoleChannel.h"
@@ -54,12 +55,12 @@ int main ( int argc,const char * argv[] )
     Logger& rootlogger = Logger::root();
     Logger::root().setChannel(pFC);
     rootlogger.setChannel ( pFC );
-    rootlogger.setLevel ( "debug" );
+    rootlogger.setLevel ( "warning" );
 
     poco_warning ( rootlogger, "starting logger" );
     poco_information ( rootlogger, "Starting up");
     poco_warning ( rootlogger, "starting logger" );
-    openlog ( "xplwemonat", LOG_PID, LOG_DAEMON );
+    openlog ( "xplwemo", LOG_PID, LOG_DAEMON );
 
     WeMoDevice dev;
     

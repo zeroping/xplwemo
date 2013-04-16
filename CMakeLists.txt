@@ -27,7 +27,7 @@ add_subdirectory (xPLsdk/src)
 
 find_package (Threads)
 
-add_definitions(-D_DEBUG)
+# add_definitions(-D_DEBUG)
 
 find_library(POCO_FOUNDATION PocoFoundation)
 find_library(POCO_NET PocoNet)
@@ -35,7 +35,7 @@ find_library(POCO_XML PocoXML)
 find_library(POCO_UTIL PocoUtil)
 
 #add_definitions(-std=c99)
-add_executable(xplwemo main.cpp WeMoDevice.cpp GPIOPin.cpp)
+add_executable(xplwemo main.cpp WeMoDevice.cpp GPIOPin.cpp GPIOInput.cpp)
 # add_executable(xplwemo main.cpp)
 
 #our XPL library
