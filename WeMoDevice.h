@@ -9,9 +9,9 @@
 #include "GPIOPin.h"
 
 #include "Poco/SharedPtr.h"
-#include "xplUDP.h"
-#include "xplComms.h"
-#include "xplDevice.h"
+#include "XplUDP.h"
+#include "XplComms.h"
+#include "XplDevice.h"
 #include "Poco/Logger.h"
 #include "Poco/NumberFormatter.h"
 
@@ -40,8 +40,8 @@ public:
 private:
     Logger& hallog;
 
-    //xplDevice* pDevice;
-    SharedPtr<xplDevice> pDevice;
+    //XplDevice* pDevice;
+    SharedPtr<XplDevice> pDevice;
     GPIOPin relayPin;
     static const string configFilePath;
     int gpiopinnum;

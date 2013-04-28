@@ -1,5 +1,6 @@
 #include "WeMoDevice.h"
 #include "GPIOInput.h"
+#include <XplConfigItem.h>
 
 
 #include <vector>
@@ -47,22 +48,28 @@ void WeMoDevice::start()
     
  
     
-    //xplUDP::instance()->rxNotificationCenter.addObserver ( Observer<WeMoDevice, MessageRxNotification> ( *this,&WeMoDevice::HandleAllMessages ) );
+    //XplUDP::instance()->rxNotificationCenter.addObserver ( Observer<WeMoDevice, MessageRxNotification> ( *this,&WeMoDevice::HandleAllMessages ) );
     //just create it
-    xplUDP::instance();
+    XplUDP::instance();
     
-    poco_debug ( hallog, "xplUDP created" );
+    poco_debug ( hallog, "XplUDP created" );
     string xplvend = pConf->getString("xplname.vendor","smgpoe");
     string xpldevi = pConf->getString("xplname.device","wemo");
     string xplinst = pConf->getString("xplname.instance","default");
     
-    pDevice.assign ( new xplDevice ( xplvend, xpldevi, "1.0", true, true, xplUDP::instance() ) );
+    pDevice.assign ( new XplDevice ( xplvend, xpldevi, "1.0" , true, XplUDP::instance() ) );
     if ( NULL == pDevice )
     {
         poco_error ( hallog, "no device" );
         return;
     }
     pDevice->SetInstanceId(xplinst);
+    
+    
+    AutoPtr <XplConfigItem > testcfgi(new XplConfigItem ("test", "option",3));
+    
+    
+    pDevice->AddConfigItem(testcfgi);
 
     pDevice->rxNotificationCenter.addObserver ( Observer<WeMoDevice, MessageRxNotification> ( *this,&WeMoDevice::HandleDeviceMessages ) );
 
@@ -78,7 +85,6 @@ WeMoDevice::~WeMoDevice()
     poco_debug ( hallog, "destroying xplHal" );
     relayPin.setdir_gpio("in");
     relayPin.unexport_gpio();
-
 }
 
 
@@ -135,11 +141,11 @@ void WeMoDevice::HandleDeviceMessages ( MessageRxNotification* mNot )
     poco_debug ( hallog, "got directed message: " + mNot->message->GetSchemaClass() + " " + mNot->message->GetSchemaType() );
 
     if ( (icompare(mNot->message->GetSchemaClass(), "Control")==0) && ( icompare(mNot->message->GetSchemaType(), "Basic")==0))  {
-        const xplMsgItem* dev = mNot->message->GetMsgItem("device");
+        const XplMsgItem* dev = mNot->message->GetMsgItem("device");
         if (dev != NULL && icompare(dev->GetValue(),pConf->getString("relay.devname","relay"))==0 ) {
-            const xplMsgItem* dtype = mNot->message->GetMsgItem("type");
+            const XplMsgItem* dtype = mNot->message->GetMsgItem("type");
             if (dtype != NULL && icompare(dtype->GetValue(),"output")==0 ) {
-                const xplMsgItem* current = mNot->message->GetMsgItem("current");
+                const XplMsgItem* current = mNot->message->GetMsgItem("current");
                 if (current != NULL) {
                     if ( (icompare(current->GetValue(),"enable")==0) 
                         || (icompare(current->GetValue(),"high")==0)) {
@@ -168,7 +174,7 @@ Path WeMoDevice::getConfigFileLocation()
 
 void WeMoDevice::buttonPress(const string buttonName, const bool pressed) {
     
-    AutoPtr<xplMsg> message = new xplMsg ( "xpl-trig",  pDevice->GetCompleteId(), "*", "sensor", "basic" );
+    AutoPtr<XplMsg> message = new XplMsg ( "xpl-trig",  pDevice->GetCompleteId(), "*", "sensor", "basic" );
     message->AddValue ( "device",buttonName );
     message->AddValue ( "type","input" );
     if(pressed){
@@ -177,7 +183,7 @@ void WeMoDevice::buttonPress(const string buttonName, const bool pressed) {
         message->AddValue ( "current","low" );
     }
     
-    xplUDP* comm = xplUDP::instance();
+    XplUDP* comm = XplUDP::instance();
     comm->TxMsg ( *message );
     poco_information ( hallog, " sending a message:" );
     poco_trace ( hallog, message->GetRawData() );

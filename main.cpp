@@ -47,7 +47,6 @@ void setup_singnal_handler()
 int main ( int argc,const char * argv[] )
 {
 
-//     cout<<"test\n";
     AutoPtr<ConsoleChannel> pCons ( new ConsoleChannel );
     AutoPtr<PatternFormatter> pPF ( new PatternFormatter );
     pPF->setProperty ( "pattern", "%H:%M:%S %s %I %p: %t" );
@@ -55,11 +54,10 @@ int main ( int argc,const char * argv[] )
     Logger& rootlogger = Logger::root();
     Logger::root().setChannel(pFC);
     rootlogger.setChannel ( pFC );
-    rootlogger.setLevel ( "warning" );
+    rootlogger.setLevel ( "debug" );
 
     poco_warning ( rootlogger, "starting logger" );
     poco_information ( rootlogger, "Starting up");
-    poco_warning ( rootlogger, "starting logger" );
     openlog ( "xplwemo", LOG_PID, LOG_DAEMON );
 
     WeMoDevice dev;
@@ -72,11 +70,13 @@ int main ( int argc,const char * argv[] )
     while ( running )
     {
 
-        Thread::sleep ( 1000 );
+        Thread::sleep ( 100 );
+        
+//         Thread::sleep ( 3000 );
+//         running=false;
 //         poco_information ( rootlogger, "test" );
 
     }
-
     return 0;
     // exit(0);
 }
